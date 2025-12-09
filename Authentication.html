@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cybersource 3DS - Device Data Collection</title>
+</head>
+<body>
+
+<!-- 10x10 hidden iframe as required -->
+<iframe
+    id="cardinal_collection_iframe"
+    name="collectionIframe"
+    height="10"
+    width="10"
+    style="display:none;">
+</iframe>
+
+<!-- POST form to the Cardinal device data collection URL -->
+<form
+    id="cardinal_collection_form"
+    method="POST"
+    target="collectionIframe"
+    action="https://centinelapistag.cardinalcommerce.com/V1/Cruise/Collect">
+
+    <!-- JWT returned from Step 1 (authentication-setup) -->
+    <input
+        id="cardinal_collection_form_input"
+        type="hidden"
+        name="JWT"
+        value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZWQ1ZTYyOC0yMmEwLTRiNTktOWYyMy1kYTVkNDdlZTlkMmUiLCJpYXQiOjE3NjUyNzUyODcsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTc2NTI3ODg4NywiT3JnVW5pdElkIjoiNjkyMTVhOTFkMjE2NTgwYTk5MDRjYjcxIiwiUmVmZXJlbmNlSWQiOiJkMWRiZDdlNC0wNzlkLTQ0NzktOWZlNS0yYTIxYmVjNTg3YmYifQ.SHTYW_sFPQJ3qPufpuESxjd5p-wtaXFMBNAZ-zYY8gs">
+</form>
+
+</body>
+
+<!-- Auto-submit the hidden form as soon as page loads -->
+<script>
+window.onload = function () {
+    const form = document.querySelector('#cardinal_collection_form');
+    if (form) {
+        form.submit();
+    }
+};
+</script>
+
+<!-- Listen for Device Data Collection response from Cardinal -->
+<script>
+window.addEventListener("message", function(event) {
+
+    // TEST environment origin
+    const allowedOrigin = "https://centinelapistag.cardinalcommerce.com";
+
+    if (event.origin === allowedOrigin) {
+        console.log("Device Data Collection Response:", event.data);
+        /*
+           Typical payload:
+           {
+               "MessageType": "profile.completed",
+               "Session Id": "f54ea591-51ac-48de-b908-eecf4ff6beff",
+               "Status": true
+           }
+        */
+    } else {
+        console.warn("Blocked message from unknown origin:", event.origin);
+    }
+
+}, false);
+</script>
+
+</html>

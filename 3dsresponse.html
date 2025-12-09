@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Secure Authentication</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 450px;
+      }
+      .header {
+        background: #4f46e5;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .header h1 { font-size: 18px; font-weight: 600; }
+      .header p { font-size: 13px; margin-top: 8px; opacity: 0.9; }
+      .iframe-wrapper { padding: 20px; }
+      #step_up_iframe {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        width: 100%;
+        height: 500px;
+        display: block;
+      }
+      .footer {
+        padding: 16px 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #6b7280;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+      }
+      @media (max-width: 480px) {
+        .container { max-width: 100%; }
+        #step_up_iframe { height: 450px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🔒 Card Authentication</h1>
+        <p>Please complete verification with your bank</p>
+      </div>
+
+      <!-- Challenge iframe -->
+      <div class="iframe-wrapper">
+        <iframe
+          id="step_up_iframe"
+          name="stepUpIframe"
+          title="3D Secure Authentication"
+        ></iframe>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Secured by 3D Secure 2.0</p>
+      </div>
+    </div>
+
+    <!-- Hidden form -->
+    <form
+      id="step_up_form"
+      name="stepup"
+      method="POST"
+      target="stepUpIframe"
+      style="display: none"
+    >
+      <input id="step_up_form_jwt_input" type="hidden" name="JWT" value="" />
+    </form>
+
+    <script>
+      // 3DS2 Step-Up configuration
+      const STEP_UP_URL = "https://centinelapistag.cardinalcommerce.com/V2/Cruise/StepUp";
+      const ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiZmRkNzQzZi1mZTZhLTRlMmItOGFiZS04ZjZjMGQwM2JkMGUiLCJpYXQiOjE3NjUyNzU1NDQsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTc2NTI3OTE0NCwiT3JnVW5pdElkIjoiNjkyMTVhOTFkMjE2NTgwYTk5MDRjYjcxIiwiUGF5bG9hZCI6eyJBQ1NVcmwiOiJodHRwczovLzBtZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvY3JlcS5qc3AiLCJQYXlsb2FkIjoiZXlKdFpYTnpZV2RsVkhsd1pTSTZJa05TWlhFaUxDSnRaWE56WVdkbFZtVnljMmx2YmlJNklqSXVNaTR3SWl3aWRHaHlaV1ZFVTFObGNuWmxjbFJ5WVc1elNVUWlPaUkyTnpObVlqYzJOQzB5WkRJd0xUUXpaR1F0T0RrM05TMDFPV000WVRnd09XVmhOekFpTENKaFkzTlVjbUZ1YzBsRUlqb2lPV0ZqTURaaE9EUXROR05oT0MwME1qWmpMV0V5T1RBdE5EUTRaamxpWVRJMVpqQm1JaXdpWTJoaGJHeGxibWRsVjJsdVpHOTNVMmw2WlNJNklqQXlJbjAiLCJUcmFuc2FjdGlvbklkIjoiYlZFT3NIYkxhVU5CbmxoRUx6WjAifSwiT2JqZWN0aWZ5UGF5bG9hZCI6dHJ1ZSwiUmV0dXJuVXJsIjoiaHR0cHM6Ly83ODQwMTVmNDg0NmEubmdyb2stZnJlZS5hcHAvY3liZXJzb3VyY2UvcmV0dXJuIn0.pXxqGZaLeP-RGOWj8CbRK4lUfYuvXphnhM5N_K9ZXds";
+
+      window.onload = function () {
+        const form = document.getElementById("step_up_form");
+        const jwtInput = document.getElementById("step_up_form_jwt_input");
+
+        form.action = STEP_UP_URL;
+        jwtInput.value = ACCESS_TOKEN;
+
+        // Submit the form to load the challenge inside the iframe
+        form.submit();
+
+        console.log("3DS Step-Up Challenge initiated");
+
+        // Optional: listen for messages from the iframe
+        window.addEventListener("message", function(event) {
+          console.log("Message from Step-Up iframe:", event.data);
+        });
+      };
+    </script>
+  </body>
+</html>
